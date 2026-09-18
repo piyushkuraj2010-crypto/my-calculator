@@ -1,0 +1,268 @@
+ <!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>माय फर्स्ट वेबसाइट</title>
+    <style>
+        /* बॉडी का शुरुआती गहरा (Dark) रंग और स्मूथ कलर बदलने के लिए transition */
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+            transition: background-color 0.5s ease;
+        }
+
+        /* कलर चेंज करने वाला बटन */
+        .theme-btn {
+            background-color: #ffffff;
+            color: #121212;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        /* डिजिटल टाइमर का स्टाइल */
+        .timer-box {
+            background-color: #0c1a1a;
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            font-size: 28px;
+            padding: 10px 30px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        /* गेम और कैलकुलेटर के बॉक्स का स्टाइल */
+        .card-box {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 15px;
+            width: 300px;
+            margin-bottom: 20px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 22px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        /* गेम इनपुट और बटन का स्टाइल */
+        .game-input {
+            width: 80px;
+            height: 45px;
+            background-color: #2d2d2d;
+            border: 1px solid #444;
+            color: white;
+            font-size: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .btn-green {
+            background-color: #00cc88;
+            color: white;
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* कैलकुलेटर स्क्रीन और बटन */
+        #calc-screen {
+            width: 100%;
+            height: 50px;
+            background-color: #2d2d2d;
+            border: none;
+            color: white;
+            font-size: 24px;
+            text-align: right;
+            padding: 5px 10px;
+            border-radius: 8px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .btn-blue {
+            padding: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #4ba3e3;
+            color: white;
+        }
+
+        .btn-clear { background-color: #ff3b30; }
+        .btn-equal { background-color: #34c759; }
+        button:active { opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+    <!-- कलर बदलने का बटन -->
+    <button onclick="changeBackgroundColor()" class="theme-btn">🎨 कलर बदलो!</button>
+
+    <!-- 1. डिजिटल टाइमर -->
+    <div class="timer-box" id="digital-clock">00:00:00 PM</div>
+
+    <!-- 2. नंबर पहचानो गेम -->
+    <div class="card-box">
+        <div class="card-title" style="color: #ffcc00;">🎲 नंबर पहचानो गेम</div>
+        <p style="color: #aaa; font-size: 14px;">1 से 10 के बीच का नंबर सोचो और लिखो</p>
+        
+        <input type="number" id="guess-input" class="game-input" min="1" max="10" placeholder="?">
+        
+        <button onclick="checkGuess()" class="btn-green">चेक करो!</button>
+        
+        <p id="game-result" style="margin-top: 15px; font-weight: bold; min-height: 20px;"></p>
+        <p style="color: #888; font-size: 14px; margin-bottom: 0;">अटेंप्ट: <span id="attempts-count">0</span></p>
+    </div>
+
+    <!-- 3. डिजिटल कैलकुलेटर -->
+    <div class="card-box">
+        <div class="card-title" style="color: #4ba3e3;">🧮 डिजिटल कैलकुलेटर</div>
+        
+        <input type="text" id="calc-screen" readonly value="0">
+        
+        <div class="calculator-buttons">
+            <button onclick="clearScreen()" class="btn-blue btn-clear">C</button>
+            <button onclick="appendValue('/')" class="btn-blue">÷</button>
+            <button onclick="appendValue('*')" class="btn-blue">×</button>
+            <button onclick="appendValue('-')" class="btn-blue">-</button>
+            
+            <button onclick="appendValue('7')" class="btn-blue">7</button>
+            <button onclick="appendValue('8')" class="btn-blue">8</button>
+            <button onclick="appendValue('9')" class="btn-blue">9</button>
+            <button onclick="appendValue('+')" class="btn-blue">+</button>
+            
+            <button onclick="appendValue('4')" class="btn-blue">4</button>
+            <button onclick="appendValue('5')" class="btn-blue">5</button>
+            <button onclick="appendValue('6')" class="btn-blue">6</button>
+            <button onclick="calculateResult()" class="btn-blue btn-equal">=</button>
+            
+            <button onclick="appendValue('1')" class="btn-blue">1</button>
+            <button onclick="appendValue('2')" class="btn-blue">2</button>
+            <button onclick="appendValue('3')" class="btn-blue">3</button>
+            <button onclick="appendValue('0')" class="btn-blue">0</button>
+        </div>
+    </div>
+
+    <!-- जावास्क्रिप्ट लॉजिक -->
+    <script>
+        // === स्क्रीन का कलर बदलने का कोड ===
+        const colors = ["#121212", "#1a2536", "#1c352d", "#2d1a36", "#36221a"];
+        let currentColorIndex = 0;
+
+        function changeBackgroundColor() {
+            currentColorIndex = (currentColorIndex + 1) % colors.length;
+            document.body.style.backgroundColor = colors[currentColorIndex];
+        }
+
+        // === 1. टाइमर का कोड ===
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            const hoursStr = String(hours).padStart(2, '0');
+
+            document.getElementById("digital-clock").innerText = `${hoursStr}:${minutes}:${seconds} ${ampm}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // === 2. नंबर पहचानो गेम का कोड ===
+        let randomNumber = Math.floor(Math.random() * 10) + 1;
+        let attempts = 0;
+
+        function checkGuess() {
+            const userInput = document.getElementById("guess-input").value;
+            const resultText = document.getElementById("game-result");
+            const attemptsText = document.getElementById("attempts-count");
+
+            if(userInput === "") {
+                resultText.style.color = "#ff3b30";
+                resultText.innerText = "कृपया एक नंबर डालें!";
+                return;
+            }
+
+            attempts++;
+            attemptsText.innerText = attempts;
+            const guess = parseInt(userInput);
+
+            if (guess === randomNumber) {
+                resultText.style.color = "#34c759";
+                resultText.innerText = "🎉 सही जवाब! जीत गए!";
+                setTimeout(() => {
+                    randomNumber = Math.floor(Math.random() * 10) + 1;
+                    attempts = 0;
+                    attemptsText.innerText = attempts;
+                    document.getElementById("guess-input").value = "";
+                    resultText.innerText = "";
+                }, 3000);
+            } else if (guess > randomNumber) {
+                resultText.style.color = "#ffcc00";
+                resultText.innerText = "थोड़ा छोटा नंबर सोचो 👇";
+            } else {
+                resultText.style.color = "#ffcc00";
+                resultText.innerText = "थोड़ा बड़ा नंबर सोचो 👆";
+            }
+        }
+
+        // === 3. कैलकुलेटर का कोड ===
+        const screen = document.getElementById("calc-screen");
+
+        function appendValue(value) {
+            if (screen.value === "0") {
+                screen.value = value;
+            } else {
+                screen.value += value;
+            }
+        }
+
+        function clearScreen() {
+            screen.value = "0";
+        }
+
+        function calculateResult() {
+            try {
+                screen.value = eval(screen.value);
+            } catch (error) {
+                screen.value = "Error";
+            }
+        }
+    </script>
+
+</body>
+</html>

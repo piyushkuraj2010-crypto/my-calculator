@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>माय फर्स्ट वेबसाइट - गेम और कैलकुलेटर</title>
+    <title>माय फर्स्ट वेबसाइट - गेम्स और कैलकुलेटर</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -31,7 +31,32 @@
             box-shadow: 0px 10px 25px rgba(0,0,0,0.5);
             text-align: center;
         }
-        /* गेम स्टाइल */
+        /* ❌⭕ Tic-Tac-Toe स्टाइल */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 15px auto;
+            max-width: 240px;
+        }
+        .cell {
+            width: 70px;
+            height: 70px;
+            background-color: #333;
+            border-radius: 10px;
+            font-size: 32px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .cell:active { transform: scale(0.95); }
+        .cell.X { color: #ff3b30; }
+        .cell.O { color: #00bcd4; }
+        
+        /* 🎲 नंबर गेम स्टाइल */
         #guessInput {
             width: 80px;
             height: 40px;
@@ -50,8 +75,11 @@
             border-radius: 10px;
             cursor: pointer;
             width: 100%;
+            margin-top: 5px;
         }
-        /* कैलकुलेटर स्टाइल */
+        .btn.reset { background-color: #ff9f0a; }
+
+        /* 🧮 कैलकुलेटर स्टाइल */
         #display {
             width: 100%;
             height: 55px;
@@ -87,16 +115,35 @@
 <body>
 
 <div class="container">
+    
+    <!-- ❌⭕ Tic-Tac-Toe गेम -->
+    <div class="card">
+        <h2 style="color: #ff3b30; margin-top: 0;">❌⭕ टिक-टैक-टो गेम</h2>
+        <p id="turnStatus">बारी: प्लेयर X की</p>
+        <div class="board" id="board">
+            <div class="cell" onclick="makeMove(this, 0)"></div>
+            <div class="cell" onclick="makeMove(this, 1)"></div>
+            <div class="cell" onclick="makeMove(this, 2)"></div>
+            <div class="cell" onclick="makeMove(this, 3)"></div>
+            <div class="cell" onclick="makeMove(this, 4)"></div>
+            <div class="cell" onclick="makeMove(this, 5)"></div>
+            <div class="cell" onclick="makeMove(this, 6)"></div>
+            <div class="cell" onclick="makeMove(this, 7)"></div>
+            <div class="cell" onclick="makeMove(this, 8)"></div>
+        </div>
+        <button class="btn reset" onclick="resetTicTacToe()">गेम रीसेट करें</button>
+    </div>
+
     <!-- 🎲 नंबर पहचानो गेम -->
     <div class="card">
         <h2 style="color: #ff9f0a; margin-top: 0;">🎲 नंबर पहचानो गेम</h2>
-        <p>1 से 10 के बीच का नंबर सोचो और लिखो:</p>
+        <p>1 से 10 के बीच का नंबर सोचो:</p>
         <input type="number" id="guessInput" min="1" max="10" placeholder="?">
         <button class="btn" onclick="checkGuess()">चेक करो!</button>
         <p id="gameResult" style="font-weight: bold; margin-top: 15px;"></p>
     </div>
 
-    <!-- 🧮 नया डिजिटल कैलकुलेटर -->
+    <!-- 🧮 डिजिटल कैलकुलेटर -->
     <div class="card">
         <h2 style="color: #00bcd4; margin-top: 0;">🧮 डिजिटल कैलकुलेटर</h2>
         <input type="text" id="display" readonly placeholder="0">
@@ -127,7 +174,65 @@
 </div>
 
 <script>
-    // गेम का लॉजिक
+    // ❌⭕ Tic-Tac-Toe लॉजिक
+    let currentPlayer = 'X';
+    let boardState = ["", "", "", "", "", "", "", "", ""];
+    let isGameActive = true;
+    const winPatterns = [, [3, 4, 5], [6, 7, 8],
+, [1, 4, 7], [2, 5, 8],
+, [2, 4, 6]
+    ];
+
+    function makeMove(cell, index) {
+        if (boardState[index] !== "" || !isGameActive) return;
+        
+        boardState[index] = currentPlayer;
+        cell.textContent = currentPlayer;
+        cell.classList.add(currentPlayer);
+        
+        checkWinner();
+    }
+
+    function checkWinner() {
+        let roundWon = false;
+        for (let i = 0; i < winPatterns.length; i++) {
+            const [a, b, c] = winPatterns[i];
+            if (boardState[a] && boardState[a] === boardState[b] && boardState[a] === boardState[c]) {
+                roundWon = true;
+                break;
+            }
+        }
+
+        if (roundWon) {
+            document.getElementById('turnStatus').textContent = `🎉 प्लेयर ${currentPlayer} जीत गया!`;
+            document.getElementById('turnStatus').style.color = "#30d158";
+            isGameActive = false;
+            return;
+        }
+
+        if (!boardState.includes("")) {
+            document.getElementById('turnStatus').textContent = "🤝 मैच ड्रा हो गया!";
+            isGameActive = false;
+            return;
+        }
+
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        document.getElementById('turnStatus').textContent = `बारी: प्लेयर ${currentPlayer} की`;
+    }
+
+    function resetTicTacToe() {
+        currentPlayer = 'X';
+        boardState = ["", "", "", "", "", "", "", "", ""];
+        isGameActive = true;
+        document.getElementById('turnStatus').textContent = "बारी: प्लेयर X की";
+        document.getElementById('turnStatus').style.color = "white";
+        document.querySelectorAll('.cell').forEach(cell => {
+            cell.textContent = "";
+            cell.classList.remove('X', 'O');
+        });
+    }
+
+    // 🎲 नंबर गेम लॉजिक
     let targetNumber = Math.floor(Math.random() * 10) + 1;
     function checkGuess() {
         const input = document.getElementById('guessInput').value;
@@ -137,14 +242,14 @@
         if (parseInt(input) === targetNumber) {
             result.textContent = "🎉 सही जवाब! आपने जीत लिया!";
             result.style.color = "#30d158";
-            targetNumber = Math.floor(Math.random() * 10) + 1; // रीसेट गेम
+            targetNumber = Math.floor(Math.random() * 10) + 1;
         } else {
             result.textContent = "❌ गलत जवाब! दोबारा कोशिश करो।";
             result.style.color = "#ff3b30";
         }
     }
 
-    // कैलकुलेटर का लॉजिक
+    // 🧮 कैलकुलेटर लॉजिक
     const display = document.getElementById('display');
     function appendValue(val) {
         if (display.value === '0' && val !== '.') { display.value = val; } 
@@ -158,4 +263,4 @@
 </script>
 
 </body>
-</html
+         </html>

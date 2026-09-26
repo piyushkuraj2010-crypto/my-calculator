@@ -3,131 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>मल्टी-गेम ज़ोन</title>
+    <title>ऑल-इन-वन गेम और कैलकुलेटर ज़ोन</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #0f172a; color: white; text-align: center; padding: 20px; }
-        .game-card { background: #1e293b; border-radius: 15px; padding: 20px; max-width: 400px; margin: 20px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        h2 { color: #f87171; margin-bottom: 5px; }
-        .status { margin-bottom: 15px; font-size: 18px; color: #cbd5e1; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #121824;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-top: 10px;
+        }
+        .card {
+            background-color: #1e2640;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .tictactoe-title { color: #ff4a5a; }
+        .number-title { color: #ff9f43; }
+        .calc-title { color: #2ebd7f; }
+        
+        .status {
+            font-size: 16px;
+            color: #a0aec0;
+            margin-bottom: 20px;
+        }
         
         /* Tic Tac Toe Grid */
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 260px; margin: 0 auto; }
-        .cell { width: 80px; height: 80px; background: #334155; border: none; border-radius: 10px; font-size: 32px; font-weight: bold; color: white; cursor: pointer; }
-        .cell:hover { background: #475569; }
-        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .cell {
+            background-color: #2d375a;
+            aspect-ratio: 1;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .cell:active { transform: scale(0.95); }
+        .cell.X { color: #ff4a5a; }
+        .cell.O { color: #2ebd7f; }
+
         /* Buttons */
-        .btn-yellow { background: #f59e0b; color: #000; border: none; padding: 12px; width: 100%; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; }
-        .btn-green { background: #10b981; color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; }
-        
-        /* Number Game Input */
-        .num-input { width: 60px; height: 50px; background: #334155; border: none; border-radius: 8px; font-size: 20px; color: white; text-align: center; margin: 15px 0; }
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        button:active { opacity: 0.9; }
+        .btn-reset { background-color: #ff9f43; color: #121824; }
+        .btn-check { background-color: #2ebd7f; color: #ffffff; }
+
+        /* Number Game Styles */
+        .input-number {
+            width: 80px;
+            padding: 10px;
+            font-size: 20px;
+            text-align: center;
+            border-radius: 8px;
+            border: 2px solid #2d375a;
+            background-color: #121824;
+            color: white;
+            margin-bottom: 15px;
+        }
+        .input-number:focus { outline: none; border-color: #2ebd7f; }
+
+        /* Calculator Styles */
+        .calc-screen {
+            width: 100%;
+            height: 60px;
+            background-color: #121824;
+            border: 2px solid #2d375a;
+            border-radius: 12px;
+            font-size: 28px;
+            color: #ffffff;
+            text-align: right;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+        }
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .calc-btn {
+            background-color: #2d375a;
+            color: white;
+            font-size: 20px;
+            padding: 15px 0;
+            border-radius: 10px;
+        }
+        .calc-btn.operator { background-color: #ff9f43; color: #121824; }
+        .calc-btn.clear { background-color: #ff4a5a; }
+        .calc-btn.equal { background-color: #2ebd7f; }
     </style>
 </head>
 <body>
 
-    <!-- 1. टिक-टैक-टो गेम -->
-    <div class="game-card">
-        <h2>❌⭕ टिक-टैक-टो गेम</h2>
-        <div class="status" id="tic-status">बारी: प्लेयर X की</div>
-        <div class="grid">
-            <button class="cell" onclick="makeMove(this, 0)"></button>
-            <button class="cell" onclick="makeMove(this, 1)"></button>
-            <button class="cell" onclick="makeMove(this, 2)"></button>
-            <button class="cell" onclick="makeMove(this, 3)"></button>
-            <button class="cell" onclick="makeMove(this, 4)"></button>
-            <button class="cell" onclick="makeMove(this, 5)"></button>
-            <button class="cell" onclick="makeMove(this, 6)"></button>
-            <button class="cell" onclick="makeMove(this, 7)"></button>
-            <button class="cell" onclick="makeMove(this, 8)"></button>
+    <div class="container">
+        <!-- 1. टिक टैक टो गेम -->
+        <div class="card">
+            <h2 class="tictactoe-title">❌⭕ टिक-टैक-टो गेम</h2>
+            <div class="status" id="ttt-status">बारी: प्लेयर X की</div>
+            
+            <div class="grid">
+                <div class="cell" onclick="makeMove(this, 0)"></div>
+                <div class="cell" onclick="makeMove(this, 1)"></div>
+                <div class="cell" onclick="makeMove(this, 2)"></div>
+                <div class="cell" onclick="makeMove(this, 3)"></div>
+                <div class="cell" onclick="makeMove(this, 4)"></div>
+                <div class="cell" onclick="makeMove(this, 5)"></div>
+                <div class="cell" onclick="makeMove(this, 6)"></div>
+                <div class="cell" onclick="makeMove(this, 7)"></div>
+                <div class="cell" onclick="makeMove(this, 8)"></div>
+            </div>
+            
+            <button class="btn-reset" onclick="resetTTT()">गेम रीसेट करें</button>
         </div>
-        <button class="btn-yellow" onclick="resetTicTacToe()">गेम रीसेट करें</button>
-    </div>
 
-    <!-- 2. नंबर पहचानो गेम -->
-    <div class="game-card">
-        <h2>🎲 नंबर पहचानो गेम</h2>
-        <div class="status" id="guess-status">1 से 10 के बीच का नंबर सोचो:</div>
-        <input type="number" id="user-guess" class="num-input" placeholder="?">
-        <button class="btn-green" onclick="checkGuess()">चेक करो!</button>
+        <!-- 2. नंबर पहचानो गेम -->
+        <div class="card">
+            <h2 class="number-title">🎲 नंबर पहचानो गेम</h2>
+            <div class="status" id="num-status">1 से 10 के बीच का नंबर सोचो:</div>
+            
+            <input type="number" id="user-guess" class="input-number" min="1" max="10" placeholder="?">
+            
+            <button class="btn-check" onclick="checkNumber()">चेक करो!</button>
+        </div>
+
+        <!-- 3. कैलकुलेटर -->
+        <div class="card">
+            <h2 class="calc-title">🧮 कैलकुलेटर</h2>
+            <div class="status">हिसाब-किताब के लिए</div>
+            
+            <input type="text" id="calc-display" class="calc-screen" readonly value="0">
+            
+            <div class="calc-grid">
+                <button class="calc-btn clear" onclick="clearCalc()">C</button>
+                <button class="calc-btn operator" onclick="appendCalc('/')">÷</button>
+                <button class="calc-btn operator" onclick="appendCalc('*')">×</button>
+                <button class="calc-btn operator" onclick="deleteLast()">⌫</button>
+                
+                <button class="calc-btn" onclick="appendCalc('7')">7</button>
+                <button class="calc-btn" onclick="appendCalc('8')">8</button>
+                <button class="calc-btn" onclick="appendCalc('9')">9</button>
+                <button class="calc-btn operator" onclick="appendCalc('-')">-</button>
+                
+                <button class="calc-btn" onclick="appendCalc('4')">4</button>
+                <button class="calc-btn" onclick="appendCalc('5')">5</button>
+                <button class="calc-btn" onclick="appendCalc('6')">6</button>
+                <button class="calc-btn operator" onclick="appendCalc('+')">+</button>
+                
+                <button class="calc-btn" onclick="appendCalc('1')">1</button>
+                <button class="calc-btn" onclick="appendCalc('2')">2</button>
+                <button class="calc-btn" onclick="appendCalc('3')">3</button>
+                <button class="calc-btn equal" style="grid-row: span 2; height: 100%;" onclick="calculateResult()">=</button>
+                
+                <button class="calc-btn" style="grid-column: span 2;" onclick="appendCalc('0')">0</button>
+                <button class="calc-btn" onclick="appendCalc('.')">.</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        /* === टिक-टैक-टो लॉजिक === */
-        let currentPlayer = 'X';
+        /* === टिक-टैक-टो का लॉजिक === */
         let board = ["", "", "", "", "", "", "", "", ""];
+        let currentPlayer = "X";
         let isGameActive = true;
+        const tttStatus = document.getElementById("ttt-status");
 
-        const winPatterns = [, [3, 4, 5], [6, 7, 8], // Rows, [1, 4, 7], [2, 5, 8], // Columns, [2, 4, 6]             // Diagonals
+        const winningConditions = [, [3, 4, 5], [6, 7, 8],
+, [1, 4, 7], [2, 5, 8],
+, [2, 4, 6]
         ];
 
-        function makeMove(button, index) {
+        function makeMove(cell, index) {
             if (board[index] !== "" || !isGameActive) return;
-
             board[index] = currentPlayer;
-            button.innerText = currentPlayer;
-            button.style.color = currentPlayer === 'X' ? '#f87171' : '#38bdf8';
-
-            checkWinner();
+            cell.innerText = currentPlayer;
+            cell.classList.add(currentPlayer);
+            checkResult();
         }
 
-        function checkWinner() {
+        function checkResult() {
             let roundWon = false;
-            for (let pattern of winPatterns) {
-                let a = board[pattern[0]];
-                let b = board[pattern[1]];
-                let c = board[pattern[2]];
-                if (a === "" || b === "" || c === "") continue;
-                if (a === b && b === c) {
+            for (let i = 0; i < winningConditions.length; i++) {
+                const [a, b, c] = winningConditions[i];
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
                     roundWon = true;
                     break;
                 }
             }
-
             if (roundWon) {
-                document.getElementById('tic-status').innerText = `🎉 प्लेयर ${currentPlayer} जीत गया!`;
+                tttStatus.innerText = `🎉 प्लेयर ${currentPlayer} जीत गया!`;
+                tttStatus.style.color = "#2ebd7f";
                 isGameActive = false;
                 return;
             }
-
             if (!board.includes("")) {
-                document.getElementById('tic-status').innerText = "🤝 गेम ड्रा हो गया!";
+                tttStatus.innerText = "🤝 गेम ड्रा हो गया!";
+                tttStatus.style.color = "#ff9f43";
                 isGameActive = false;
                 return;
             }
-
-            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-            document.getElementById('tic-status').innerText = `बारी: प्लेयर ${currentPlayer} की`;
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            tttStatus.innerText = `बारी: प्लेयर ${currentPlayer} की`;
         }
 
-        function resetTicTacToe() {
-            currentPlayer = 'X';
+        function resetTTT() {
             board = ["", "", "", "", "", "", "", "", ""];
+            currentPlayer = "X";
             isGameActive = true;
-            document.getElementById('tic-status').innerText = "बारी: प्लेयर X की";
-            document.querySelectorAll('.cell').forEach(cell => cell.innerText = "");
+            tttStatus.innerText = "बारी: प्लेयर X की";
+            tttStatus.style.color = "#a0aec0";
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.innerText = "";
+                cell.classList.remove("X", "O");
+            });
         }
 
-        /* === नंबर पहचानो लॉजिक === */
-        let targetNumber = Math.floor(Math.random() * 10) + 1;
+        /* === नंबर पहचानो गेम का लॉजिक === */
+        let secretNumber = Math.floor(Math.random() * 10) + 1;
+        const numStatus = document.getElementById("num-status");
 
-        function checkGuess() {
-            let userGuess = parseInt(document.getElementById('user-guess').value);
-            let statusText = document.getElementById('guess-status');
-
-            if (isNaN(userGuess) || userGuess < 1 || userGuess > 10) {
-                statusText.innerText = "❌ कृपया 1 से 10 के बीच नंबर डालें!";
-                return;
-            }
-
-            if (userGuess === targetNumber) {
-                statusText.innerText = `🎉 सही जवाब! नंबर ${targetNumber} ही था।`;
-                targetNumber = Math.floor(Math.random() * 10) + 1; // Reset game
-            } else if (userGuess < targetNumber) {
-                statusText.innerText = "📉 थोड़ा बड़ा नंबर सोचो!";
-            } else {
-                statusText.innerText = "📈 थोड़ा छोटा नंबर सोचो!";
-            }
-        }
-    </script>
-</body>
-</html>
+        function checkNumber() {
+            const inputField = document.getElementById("user-guess");
+            const userGuess = parseInt(inputField.value);
+            if (isNaN(userGuess) || userGuess < 1 || userGuess > 
